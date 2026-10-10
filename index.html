@@ -470,6 +470,8 @@ function doPublish(){
   // 克隆文档，在克隆上清理，不影响原 DOM
   var clone=document.documentElement.cloneNode(true);
   clone.querySelector('#blog-data').textContent=dataJson;
+  // 清除克隆中的动态元素（toast、浏览器扩展注入的元素）
+  clone.querySelectorAll('.toast,#clearly-skim-root,#clearly-skim-hint-root,#clearly-root,#immersive-translate-browser-popup').forEach(function(el){el.remove()});
   var cloneApp=clone.querySelector('#app');
   if(cloneApp)cloneApp.innerHTML='';
   var cloneHeader=clone.querySelector('#header');
