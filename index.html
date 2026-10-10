@@ -465,7 +465,7 @@ function doPublish(){
   if(!token||!owner||!repo){toast('GitHub 设置不完整',3000);return;}
   toast('发布中…',10000);
   // 清理 blog 数据（去掉内部字段）
-  var clean={title:blog.title,description:blog.description,posts:blog.posts};
+  var clean={title:blog.title,description:blog.description,posts:blog.posts,_updated:blog._updated||new Date().toISOString()};
   var dataJson=JSON.stringify(clean,null,2).replace(/<\//g,'<\\/');
   // 克隆文档，在克隆上清理，不影响原 DOM
   var clone=document.documentElement.cloneNode(true);
@@ -498,7 +498,7 @@ function doPublish(){
     });
     return r.json();
   }).then(function(){
-    localStorage.removeItem('blog_data');hasUnpublished=false;renderHeader();
+    hasUnpublished=false;renderHeader();
     toast('发布成功！');location.hash='/';
   }).catch(function(e){
     toast('发布失败：'+e.message,5000);
