@@ -4,3 +4,5 @@ dist/
 *.log
 
 # docs/ 是构建产物，但必须提交 —— GitHub Pages 直接服务它。
+# 本地浏览器测试产物
+.playwright-mcp/
