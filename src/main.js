@@ -1,6 +1,7 @@
 import './styles/main.css'
 import { $ } from './lib/dom.js'
 import { highlight } from './lib/markdown.js'
+import { collapseQuotes } from './lib/quote.js'
 import { loadData } from './state.js'
 import { renderEditor } from './views/editor.js'
 import { renderFooter, renderHeader } from './views/layout.js'
@@ -21,6 +22,7 @@ function route() {
   else renderHome()
 
   highlight($('#app'))
+  collapseQuotes($('#app'))
   window.scrollTo(0, 0)
 }
 

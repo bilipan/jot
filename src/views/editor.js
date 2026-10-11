@@ -1,5 +1,6 @@
 import { $, esc, genId, toast } from '../lib/dom.js'
 import { highlight, md } from '../lib/markdown.js'
+import { collapseQuotes } from '../lib/quote.js'
 import { saveLocal, state, updateBlogData } from '../state.js'
 import { renderHeader } from './layout.js'
 import { CAN_PUBLISH, doPublish } from './publish.js'
@@ -81,6 +82,7 @@ function bindEditor(id) {
     $('#preview').style.display = ''
     $('#preview').innerHTML = md($('#e-content').value)
     highlight($('#preview'))
+    collapseQuotes($('#preview'))
     $('#t-write').classList.remove('active')
     $('#t-preview').classList.add('active')
   }

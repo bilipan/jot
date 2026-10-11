@@ -101,8 +101,9 @@ src/
   main.js               启动、路由、快捷键
   state.js              共享状态 + localStorage 持久化
   lib/dom.js            $ / esc / 日期 / toast
-  lib/markdown.js       marked + microlighter
-  lib/embed.js         媒体 URL 解析 + embed HTML
+lib/markdown.js       marked + microlighter
+  lib/embed.js          媒体 URL 解析 + embed HTML
+  lib/quote.js          长引用折叠
   views/                layout / list / editor / settings / publish
   styles/main.css       样式
 ```
@@ -146,6 +147,14 @@ payload 用惰性匹配顶到行尾最后一个右括号，这样 `javascript:al
 
 > 和手写解析器的一个行为差异：marked 默认放行 Markdown 里的裸 HTML（可嵌 iframe 等），
 > 手写解析器是转义的。作者单人博客下这算特性，若要禁用在 `lib/markdown.js` 里处理。
+
+## 引用样式
+
+`>` 引用块渲染成细竖线 + 大引号字形 + 17px/1.85 行高（原先是 3px 主色边 + 次要色文字）。
+超过 5 行会自动截断、底部渐隐并显示「展开更多」，点击可展开/收起。
+
+行数阈值写在 CSS 的 `--quote-lines`，`src/lib/quote.js` 里的 `LINES` 要跟着改，
+两处不一致会导致折叠位置和实际截断高度对不上。
 
 ## 视频 / 音乐嵌入
 

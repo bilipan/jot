@@ -40,7 +40,57 @@ a:hover{text-decoration:underline}
 .post-content p{margin-bottom:14px}
 .post-content h1,.post-content h2,.post-content h3{margin:24px 0 10px;font-weight:600}
 .post-content h1{font-size:22px}.post-content h2{font-size:19px}.post-content h3{font-size:17px}
-.post-content blockquote{border-left:3px solid var(--accent);padding:4px 0 4px 16px;margin:14px 0;color:var(--muted)}
+/* 引用：细竖线 + 大引号字形 + 宽松行高，过长时底部渐隐并可展开。
+   --quote-lines 同时被 lib/quote.js 读来决定何时折叠，改这里要同步改那边。 */
+.post-content blockquote{
+  --quote-lines:5;
+  position:relative;
+  margin:26px 0;
+  padding:24px 0 2px 20px;
+  border-left:1px solid var(--border);
+  color:var(--text);
+  font-size:17px;
+  line-height:1.85;
+}
+.post-content blockquote::before{
+  content:"“";
+  position:absolute;
+  left:11px;
+  top:2px;
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:42px;
+  line-height:1;
+  color:var(--muted);
+  pointer-events:none;
+}
+.post-content blockquote.is-clamped .quote-body{
+  max-height:calc(var(--quote-lines) * 1.85em);
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(180deg,#000 55%,rgba(0,0,0,0));
+  mask-image:linear-gradient(180deg,#000 55%,rgba(0,0,0,0));
+}
+.post-content blockquote.is-open .quote-body{
+  max-height:none;
+  overflow:visible;
+  -webkit-mask-image:none;
+  mask-image:none;
+}
+.quote-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  margin-top:12px;
+  padding:0;
+  border:0;
+  background:none;
+  color:var(--muted);
+  font:inherit;
+  font-size:14px;
+  cursor:pointer;
+}
+.quote-toggle:hover{color:var(--text)}
+.quote-toggle::after{content:"⌄";font-size:16px;line-height:1;transition:transform .2s}
+.quote-toggle.is-open::after{transform:rotate(180deg)}
 /* 代码块的配色交给 microlighter 主题（[data-syntax-theme] pre:has(code)），
    这里只留排版，避免和主题的 background 打架。 */
 .post-content pre{padding:14px;border-radius:8px;overflow-x:auto;margin:14px 0}
@@ -72,7 +122,7 @@ a:hover{text-decoration:underline}
 .tag:hover{text-decoration:none;background:var(--accent);color:#fff}
 .link-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px}
 .link-card a{color:var(--accent);word-break:break-all;font-size:14px}
-.quote-text{font-size:18px;font-style:italic;border-left:3px solid var(--accent);padding:4px 0 4px 16px;margin-bottom:8px}
+.quote-text{font-size:17px;line-height:1.85;border-left:1px solid var(--border);padding-left:20px;margin-bottom:8px}
 .quote-source{color:var(--muted);font-size:13px}
 .editor{margin-top:20px}
 .field{margin-bottom:16px}
