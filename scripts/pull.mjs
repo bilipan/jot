@@ -29,6 +29,8 @@ function parseArgs(argv) {
 
 async function readSource({ url, file }) {
   if (url) {
+    // node 的 fetch 不支持 file://，本地文件走文件读取。
+    if (url.startsWith('file://')) return readFileSync(fileURLToPath(url), 'utf8')
     const res = await fetch(url)
     if (!res.ok) throw new Error(`拉取失败 ${res.status} ${res.statusText} — ${url}`)
     return res.text()
