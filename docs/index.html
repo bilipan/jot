@@ -101,7 +101,7 @@ Please report this to https://github.com/markedjs/marked.`,e){let e=`<p>An error
       "id": "mv3e9odapb9ly",
       "type": "note",
       "title": "超简单的主题切换技巧",
-      "content": "原先这个网站的代码高亮主题是默认暗色的，但是考虑到网站本身已经支持了跟随系统主题自动切换，所以为了保持统一，准备将代码高亮主题跟系统主题自动同步。\n\n一开始我想的还是传统的方式，比如通过添加类，或是在css中添加media查询来实现。后来让AI去实现这个功能时，发现了一个更简单的方式，直接在`<link />`标签中添加`media`属性，利用`prefers-color-scheme`媒体查询在不同的系统主题下加载不同的样式。\n\n```html\n<link rel=\"stylesheet\" href=\"https://unpkg.com/prismjs@1.29.0/themes/prism.css\" media=\"(prefers-color-scheme: light)\">\n<link rel=\"stylesheet\" href=\"https://unpkg.com/prismjs@1.29.0/themes/prism-okaidia.css\" media=\"(prefers-color-scheme: dark)\">\n```\n\n分析了下这个方案，发现了一些有趣的细节。\n\n- 当页面为亮色主题时，会同时下载`prism.css`和`prism-okaidia.css`，但是没有命中的media（暗色主题）不会参与渲染（也就不会阻塞渲染）。\n\n- 虽然两个主题文件都会下载，但是它们的优先级不一样，比如当页面为亮色主题时，`prism.css`比`prism-okaidia.css`的优先级高。\n![](./image.png)\n\n- 如果此时切换为系统或浏览器的主题为暗色，则`prism-okaidia.css`会命中media，就直接渲染了。\n\n- 如果是刷新页面（比如当前系统主题为暗色），两个主题文件会重新下载，但是由于浏览器的缓存机制，所以一般情况下不会重新请求。此时，`prism-okaidia.css`的优先级就比`prism.css`高了。\n![alt text](image-1.png)",
+      "content": "原先这个网站的代码高亮主题是默认暗色的，但是考虑到网站本身已经支持了跟随系统主题自动切换，所以为了保持统一，准备将代码高亮主题跟系统主题自动同步。\n\n一开始我想的还是传统的方式，比如通过添加类，或是在css中添加media查询来实现。后来让AI去实现这个功能时，发现了一个更简单的方式，直接在`<link />`标签中添加`media`属性，利用`prefers-color-scheme`媒体查询在不同的系统主题下加载不同的样式。\n\n```html\n<link rel=\"stylesheet\" href=\"https://unpkg.com/prismjs@1.29.0/themes/prism.css\" media=\"(prefers-color-scheme: light)\">\n<link rel=\"stylesheet\" href=\"https://unpkg.com/prismjs@1.29.0/themes/prism-okaidia.css\" media=\"(prefers-color-scheme: dark)\">\n```\n\n分析了下这个方案，发现了一些有趣的细节。\n\n- 当页面为亮色主题时，会同时下载`prism.css`和`prism-okaidia.css`，但是没有命中的media（暗色主题）不会参与渲染（也就不会阻塞渲染）。\n\n- 虽然两个主题文件都会下载，但是它们的优先级不一样，比如当页面为亮色主题时，`prism.css`比`prism-okaidia.css`的优先级高。\n\n- 如果此时切换为系统或浏览器的主题为暗色，则`prism-okaidia.css`会命中media，就直接渲染了。\n\n- 如果是刷新页面（比如当前系统主题为暗色），两个主题文件会重新下载，但是由于浏览器的缓存机制，所以一般情况下不会重新请求。此时，`prism-okaidia.css`的优先级就比`prism.css`高了。\n![alt text](https://pketh.org/images/2025/lifetime-plans/vegetables.gif)",
       "url": "",
       "source": "",
       "tags": [],
@@ -128,7 +128,7 @@ Please report this to https://github.com/markedjs/marked.`,e){let e=`<p>An error
       "date": "2026-10-11T05:43:47.965Z"
     }
   ],
-  "_updated": "2026-10-11T05:43:47.966Z"
+  "_updated": "2026-10-11T05:44:58.523Z"
 }</script>
 
 
