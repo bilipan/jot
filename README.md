@@ -206,8 +206,17 @@ payload 用惰性匹配顶到行尾最后一个右括号，这样 `javascript:al
   --bg: #faf9f7;      /* 背景 */
   --accent: #2563eb;   /* 主题色 */
   --max: 680px;        /* 内容宽度 */
+  --muted-ink: #6b6b6b;/* 备案号颜色（比 --muted 更实，保证可读） */
 }
 ```
 
+内容栏是**贴左**的（`#header,#app,#footer` 用 `margin:0` 而非 `margin:0 auto`）。想改回居中，
+把 `main.css` 里那条规则的 `margin:0` 换成 `margin:0 auto` 即可。
+
 代码块的配色来自 microlighter 主题，在 `src/lib/markdown.js` 引入，换个主题文件即可
 （`microlighter/themes/` 下有 10 个）。
+
+### 备案号
+
+页脚的 ICP 备案号写死在 `src/views/layout.js` 顶部的 `ICP` 常量里 —— 这是站点身份信息，
+跟 jot 本身无关。Fork 这个仓库的话记得改掉或删掉。
