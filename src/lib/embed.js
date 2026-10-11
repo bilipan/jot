@@ -1,7 +1,8 @@
 import { esc } from './dom.js'
 
 /**
- * 视频嵌入：把 `@[youtube](…)` / `@[bilibili](…)` / `@[video](…)` 变成播放器。
+ * 媒体嵌入：把 `@[youtube](…)`、`@[bilibili](…)`、`@[video](…)`、`@[netease](…)`
+ * 变成播放器。
  *
  * 参数既接受裸 ID，也接受从分享菜单复制的完整 URL。
  * 解析不出来时返回错误提示而不是静默丢弃，这样拼错 ID 能立刻发现。
@@ -15,6 +16,10 @@ const MIME = { mp4: 'video/mp4', webm: 'video/webm', m4v: 'video/mp4', mov: 'vid
 
 const YT_HOSTS = new Set(['youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtube-nocookie.com'])
 const YT_PATH = /^\/(?:embed|shorts|v|live)\/([\w-]+)/
+
+// 网易云的 id 都是纯数字。歌单/专辑/电台共用同一套外链播放器。
+const NCM_ID = /\b(\d{4,})\b/
+const NCM_HOSTS = new Set(['music.163.com', 'y.music.163.com', 'm.music.163.com'])
 
 function safeURL(payload) {
   try {
@@ -70,8 +75,21 @@ function fileSrc(payload) {
   return ext ? { url: u.href, mime: MIME[ext] } : null
 }
 
-function frame(inner, extra = '') {
-  return `<figure class="video"><div class="video-frame">${inner}${extra}</div></figure>`
+function neteaseId(payload) {
+  if (NCM_ID.test(payload) && !payload.includes('/')) return NCM_ID.exec(payload)[1]
+  const u = safeURL(payload)
+  if (!u) return null
+  if (!NCM_HOSTS.has(u.hostname.toLowerCase())) return null
+  // 分享链接有两种写法：/#/song?id=… 是 hash 路由，id 在 # 之后，
+  // URL.searchParams 看不到，得从 hash 里再取一次。
+  const hashQuery = u.hash.includes('?') ? u.hash.slice(u.hash.indexOf('?') + 1) : ''
+  const id = u.searchParams.get('id') ?? new URLSearchParams(hashQuery).get('id')
+  return id?.match(NCM_ID)?.[1] ?? null
+}
+
+function figure(modifier, inner, style = '') {
+  const s = style ? ` style="${esc(style)}"` : ''
+  return `<figure class="embed embed--${modifier}"><div class="embed-frame"${s}>${inner}</div></figure>`
 }
 
 function iframe(src, title, allow = '') {
@@ -81,46 +99,68 @@ function iframe(src, title, allow = '') {
 }
 
 function failure(raw) {
-  return `<p class="video-error">${esc(raw)} —— 无法识别，换成完整的视频链接试试</p>`
+  return `<p class="embed-error">${esc(raw)} —— 无法识别，换成完整链接或 ID 试试</p>`
 }
 
-export function renderVideo(kind, payload) {
-  if (kind === 'youtube') {
+/** 每种类型：解析参数 → 生成 HTML；解析不出来返回 null。 */
+const KINDS = {
+  youtube: (payload) => {
     const id = youtubeId(payload)
     if (!id) return null
-    return frame(iframe(
+    return figure('video', iframe(
       `https://www.youtube-nocookie.com/embed/${id}`,
       'YouTube 视频',
       'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
     ))
-  }
+  },
 
-  if (kind === 'bilibili') {
+  bilibili: (payload) => {
     const ref = bilibiliRef(payload)
     if (!ref) return null
     const q = new URLSearchParams({ ...(ref.bvid ? { bvid: ref.bvid } : { aid: ref.aid }), p: ref.p ?? '1', autoplay: '0', danmaku: '0' })
     if (ref.t) q.set('t', ref.t)
-    return frame(iframe(`https://player.bilibili.com/player.html?${q}`, '哔哩哔哩视频'))
-  }
+    return figure('video', iframe(`https://player.bilibili.com/player.html?${q}`, '哔哩哔哩视频'))
+  },
 
-  if (kind === 'video') {
+  video: (payload) => {
     const f = fileSrc(payload)
     if (!f) return null
-    return frame(`<video controls preload="metadata" playsinline>` +
+    return figure('video', '<video controls preload="metadata" playsinline>' +
       `<source src="${esc(f.url)}" type="${esc(f.mime)}">` +
       `你的浏览器不支持 video 标签。<a href="${esc(f.url)}">下载视频</a></video>`)
-  }
+  },
 
-  return null
+  // 网易云外链播放器。type=2 带封面和上下曲按钮。
+  // 默认 66px 紧凑条 + 自动播放；两样都能在参数里改：
+  //   @[netease](444197494?height=140)     歌单建议调高
+  //   @[netease](444197494?auto=0)         不要自动播放
+  netease: (payload) => {
+    const id = neteaseId(payload)
+    if (!id) return null
+    const auto = /[?&]auto=([01])/.exec(payload)?.[1] ?? '1'
+    const raw = /[?&]height=(\d{2,5})/.exec(payload)?.[1]
+    // 夹在播放器实际能用的范围内，避免手滑写出 height=9999 这种撑爆版面的值。
+    const height = String(Math.min(500, Math.max(40, Number(raw ?? 66))))
+    const q = new URLSearchParams({ type: '2', id, auto, height })
+    return figure(
+      'music',
+      iframe(`https://music.163.com/outchain/player?${q}`, '网易云音乐播放器'),
+      `height:${height}px`,
+    )
+  },
 }
 
-export function videoToken(raw, kind, payload) {
-  const html = renderVideo(kind, payload)
-  return html ? { html } : { html: failure(raw) }
+export const KIND_NAMES = Object.keys(KINDS)
+
+export function embedToken(raw, kind, payload) {
+  const build = KINDS[kind]
+  return (build && build(payload)) || failure(raw)
 }
+
+const NAMES = KIND_NAMES.join('|')
 
 // payload 用惰性匹配顶到行尾最后一个右括号，这样 `javascript:alert(1)` 这类
-// 含括号的输入也会被视频规则接住并走 safeURL 协议校验，而不是漏给 marked
+// 含括号的输入也会被接住并走 safeURL 协议校验，而不是漏给 marked
 // 当普通链接渲染成一个可点击的 javascript: 链接。
-export const VIDEO_SYNTAX = /^@\[(youtube|bilibili|video)\]\(\s*(.+?)\s*\)[ \t]*(?:\n|$)/
-export const VIDEO_START = /^@\[(?:youtube|bilibili|video)\]/m
+export const EMBED_SYNTAX = new RegExp(`^@\\[(${NAMES})\\]\\(\\s*(.+?)\\s*\\)[ \\t]*(?:\\n|$)`)
+export const EMBED_START = new RegExp(`^@\\[(?:${NAMES})\\]`, 'm')

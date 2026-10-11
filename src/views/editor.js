@@ -54,8 +54,9 @@ function editorForm(p, type) {
     '<button class="tab" id="t-preview">预览</button></div>' +
     `<textarea id="e-content" placeholder="支持 Markdown…">${esc(val('content'))}</textarea>` +
     '<div id="preview" style="display:none" class="post-content"></div>' +
-    '<div class="field-hint">插入视频（独占一行）：<code>@[youtube](https://youtu.be/…)</code> · ' +
-    '<code>@[bilibili](BV1xx…)</code> · <code>@[video](https://…/clip.mp4)</code></div></div>'
+    '<div class="field-hint">插入视频 / 音乐（独占一行）：<code>@[youtube](https://youtu.be/…)</code> · ' +
+    '<code>@[bilibili](BV1xx…)</code> · <code>@[video](https://…/clip.mp4)</code> · ' +
+    '<code>@[netease](https://music.163.com/#/song?id=…)</code></div></div>'
   f += `<div class="field"><label>标签（逗号分隔）</label><input id="e-tags" value="${esc(Array.isArray(p?.tags) ? p.tags.join(', ') : (p?.tags ?? ''))}" placeholder="标签1, 标签2"></div>`
   f += '<div class="actions">' +
     '<button class="btn btn-primary" id="btn-save">保存</button>' +

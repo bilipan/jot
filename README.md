@@ -102,7 +102,7 @@ src/
   state.js              共享状态 + localStorage 持久化
   lib/dom.js            $ / esc / 日期 / toast
   lib/markdown.js       marked + microlighter
-  lib/video.js          视频 URL 解析 + embed HTML
+  lib/embed.js         媒体 URL 解析 + embed HTML
   views/                layout / list / editor / settings / publish
   styles/main.css       样式
 ```
@@ -138,17 +138,18 @@ src/
 Firefox 140 以下）自动降级为无高亮的纯文本，内容照常可读。主题是 `github`，内部用 `light-dark()`
 自动跟随系统明暗，不需要引两套。
 
-**视频语法是 marked 的块级扩展。**
-`src/lib/video.js` 导出解析逻辑和两个正则，`markdown.js` 注册成 `level: 'block'` 的扩展。
+**`@[...]` 语法是 marked 的块级扩展。**
+`src/lib/embed.js` 里每种媒体类型是一个解析函数，导出类型名数组和两个正则，`markdown.js`
+把它们注册成一个 `level: 'block'` 的扩展 —— 加新媒体类型只要往 `KINDS` 里加一个函数。
 payload 用惰性匹配顶到行尾最后一个右括号，这样 `javascript:alert(1)` 这类含括号的输入
 也会被视频规则接住并走协议校验，而不是漏给marked 当普通链接渲染成可点击的 `javascript:` 链接。
 
 > 和手写解析器的一个行为差异：marked 默认放行 Markdown 里的裸 HTML（可嵌 iframe 等），
 > 手写解析器是转义的。作者单人博客下这算特性，若要禁用在 `lib/markdown.js` 里处理。
 
-## 视频嵌入
+## 视频 / 音乐嵌入
 
-文章里用下面三种语法插入视频，**必须独占一行**：
+文章里用下面四种语法插入播放器，**必须独占一行**：
 
 ```markdown
 @[youtube](dQw4w9WgXcQ)
@@ -156,6 +157,7 @@ payload 用惰性匹配顶到行尾最后一个右括号，这样 `javascript:al
 @[bilibili](BV1Ex4y1z7FU)
 @[bilibili](https://www.bilibili.com/video/BV1Ex4y1z7FU?p=2)
 @[video](https://example.com/clip.mp4)
+@[netease](https://music.163.com/#/song?id=1830901392)
 ```
 
 参数既接受裸 ID，也接受从分享菜单复制的完整 URL。
@@ -165,12 +167,25 @@ payload 用惰性匹配顶到行尾最后一个右括号，这样 `javascript:al
 | `@[youtube]` | 裸 11 位 ID、`youtube.com/watch?v=`、`youtu.be`、`/shorts/`、`/embed/` |
 | `@[bilibili]` | `BV…`、`av…`，URL 上的 `?p=`（分P）和 `?t=`（起播秒数）会保留 |
 | `@[video]` | `.mp4` `.webm` `.m4v` `.mov` `.ogv`，必须是 `http(s)://` 链接 |
+| `@[netease]` | 裸数字 ID、`/#/song?id=`、`/song?id=`、`/#/playlist?id=`、`/album?id=`、`/#/djradio?id=` |
+
+网易云默认生成 `outchain/player?type=2&id=…&auto=1&height=66`，两个值都能在参数里改：
+
+```markdown
+@[netease](444197494)                      # 默认：自动播放，66px 紧凑条
+@[netease](444197494?height=140)           # 歌单建议调高
+@[netease](444197494?auto=0)               # 不要自动播放
+```
+
+> `auto=1` 在首次访问时通常**不会真的出声** —— 浏览器在用户没有交互前禁止有声自动播放，
+> 访客点一下页面之后才会开始，之后同一站点的访问通常可以直接播。
 
 几个说明：
 
 - YouTube 走 `youtube-nocookie.com`，播放前不写 cookie
-- 播放器固定 16:9，竖屏投稿（Shorts、B站竖屏）会被裁掉
+- 播放器固定 16:9（音乐除外），竖屏投稿（Shorts、B站竖屏）会被裁
 - **b23.tv 短链不支持** —— 它是跳转链接，浏览器端拿不到真实 BV 号，请改用完整 URL
+- 网易云外链播放器**只有浅色样式**，深色模式下是白底播放器，跨域改不了；`height` 会被夹在 40–500px
 - 写错或无法识别时会显示一条红色提示，而不是静默消失
 - 代码块里的 `@[...]` 不会被当成语法
 
