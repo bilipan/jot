@@ -84,6 +84,7 @@ src/
   state.js              共享状态 + localStorage 持久化
   lib/dom.js            $ / esc / 日期 / toast
   lib/markdown.js       marked + microlighter
+  lib/video.js          视频 URL 解析 + embed HTML
   views/                layout / list / editor / settings / publish
   styles/main.css       样式
 ```
@@ -119,8 +120,41 @@ src/
 Firefox 140 以下）自动降级为无高亮的纯文本，内容照常可读。主题是 `github`，内部用 `light-dark()`
 自动跟随系统明暗，不需要引两套。
 
+**视频语法是 marked 的块级扩展。**
+`src/lib/video.js` 导出解析逻辑和两个正则，`markdown.js` 注册成 `level: 'block'` 的扩展。
+payload 用惰性匹配顶到行尾最后一个右括号，这样 `javascript:alert(1)` 这类含括号的输入
+也会被视频规则接住并走协议校验，而不是漏给marked 当普通链接渲染成可点击的 `javascript:` 链接。
+
 > 和手写解析器的一个行为差异：marked 默认放行 Markdown 里的裸 HTML（可嵌 iframe 等），
 > 手写解析器是转义的。作者单人博客下这算特性，若要禁用在 `lib/markdown.js` 里处理。
+
+## 视频嵌入
+
+文章里用下面三种语法插入视频，**必须独占一行**：
+
+```markdown
+@[youtube](dQw4w9WgXcQ)
+@[youtube](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+@[bilibili](BV1Ex4y1z7FU)
+@[bilibili](https://www.bilibili.com/video/BV1Ex4y1z7FU?p=2)
+@[video](https://example.com/clip.mp4)
+```
+
+参数既接受裸 ID，也接受从分享菜单复制的完整 URL。
+
+| 语法 | 支持的写法 |
+|---|---|
+| `@[youtube]` | 裸 11 位 ID、`youtube.com/watch?v=`、`youtu.be`、`/shorts/`、`/embed/` |
+| `@[bilibili]` | `BV…`、`av…`，URL 上的 `?p=`（分P）和 `?t=`（起播秒数）会保留 |
+| `@[video]` | `.mp4` `.webm` `.m4v` `.mov` `.ogv`，必须是 `http(s)://` 链接 |
+
+几个说明：
+
+- YouTube 走 `youtube-nocookie.com`，播放前不写 cookie
+- 播放器固定 16:9，竖屏投稿（Shorts、B站竖屏）会被裁掉
+- **b23.tv 短链不支持** —— 它是跳转链接，浏览器端拿不到真实 BV 号，请改用完整 URL
+- 写错或无法识别时会显示一条红色提示，而不是静默消失
+- 代码块里的 `@[...]` 不会被当成语法
 
 ## 键盘快捷键
 

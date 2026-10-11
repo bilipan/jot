@@ -30,6 +30,12 @@ export default defineConfig({
     injectBlogData(),
     viteSingleFile({ removeViteModuleLoader: true }),
   ],
+  optimizeDeps: {
+    // dev 下 esbuild 会把 microlighter 预打包成 .vite/deps 里的单文件，绕过上面的
+    // transform 钩子，那句动态 import() 就会活到运行时并 404。排除掉它，让 dev 直接
+    // 走 node_modules 原始 ESM，transform 就能生效。
+    exclude: ['microlighter'],
+  },
   build: {
     target: 'es2022',
     // 产物直接是 GitHub Pages 服务的那一份。
