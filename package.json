@@ -12,7 +12,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "pull": "node scripts/pull.mjs"
+    "pull": "node scripts/pull.mjs",
+    "verify": "node scripts/verify.mjs"
   },
   "dependencies": {
     "marked": "^18.1.0",

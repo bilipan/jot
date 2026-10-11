@@ -70,6 +70,24 @@ pnpm pull --url https://xx.github.io/jot/ # 直接从线上站点收回
 pnpm build
 ```
 
+`pnpm pull` 在构建前跑，能把线上文章收回本地，避免被下一次构建覆盖。
+
+### 推送前先校验
+
+浏览器发布和 `pnpm build` 写的是同一个文件，所以要确认两边没有漂移：
+
+```bash
+pnpm verify
+# ✓ 产物与内容一致 —— 4 篇文章
+# 或
+# ✗ docs/index.html 与 content/blog.json 不同步
+#   content/blog.json  4 篇  2026-10-11T05:44:58.523Z
+#   docs/index.html   5 篇  2026-10-11T12:20:05.216Z
+#   产物更新 —— 浏览器发布过。执行：pnpm pull && pnpm build
+```
+
+它按 `_updated` 判断是哪边更新，并给出该跑哪条命令。同步时退出码 0，可以放进 pre-push 钩子。
+
 ## 开发
 
 ```
