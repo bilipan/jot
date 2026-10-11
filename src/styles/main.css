@@ -50,7 +50,7 @@ a:hover{text-decoration:underline}
 .embed{margin:16px 0}
 .embed-frame{position:relative;width:100%;background:var(--code-bg);border-radius:8px;overflow:hidden}
 .embed--video .embed-frame{aspect-ratio:16/9}
-.embed--music .embed-frame{height:140px}
+/* 音乐播放器高度由生成时按 height 参数写成行内样式，默认 66px 紧凑条 */
 .embed-frame>iframe,.embed-frame>video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
 .embed-error{color:var(--danger);font-size:14px;border-left:3px solid var(--danger);padding-left:12px}
 .post-content table{border-collapse:collapse;margin:14px 0;width:100%;font-size:14px;display:block;overflow-x:auto}

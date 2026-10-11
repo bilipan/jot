@@ -87,8 +87,9 @@ function neteaseId(payload) {
   return id?.match(NCM_ID)?.[1] ?? null
 }
 
-function figure(modifier, inner) {
-  return `<figure class="embed embed--${modifier}"><div class="embed-frame">${inner}</div></figure>`
+function figure(modifier, inner, style = '') {
+  const s = style ? ` style="${esc(style)}"` : ''
+  return `<figure class="embed embed--${modifier}"><div class="embed-frame"${s}>${inner}</div></figure>`
 }
 
 function iframe(src, title, allow = '') {
@@ -129,12 +130,23 @@ const KINDS = {
       `你的浏览器不支持 video 标签。<a href="${esc(f.url)}">下载视频</a></video>`)
   },
 
-  // 网易云外链播放器。type=2 带封面和上下曲按钮，比 type=1 高一些。
+  // 网易云外链播放器。type=2 带封面和上下曲按钮。
+  // 默认 66px 紧凑条 + 自动播放；两样都能在参数里改：
+  //   @[netease](444197494?height=140)     歌单建议调高
+  //   @[netease](444197494?auto=0)         不要自动播放
   netease: (payload) => {
     const id = neteaseId(payload)
     if (!id) return null
-    const q = new URLSearchParams({ type: '2', id, auto: '0', height: '140' })
-    return figure('music', iframe(`https://music.163.com/outchain/player?${q}`, '网易云音乐播放器'))
+    const auto = /[?&]auto=([01])/.exec(payload)?.[1] ?? '1'
+    const raw = /[?&]height=(\d{2,5})/.exec(payload)?.[1]
+    // 夹在播放器实际能用的范围内，避免手滑写出 height=9999 这种撑爆版面的值。
+    const height = String(Math.min(500, Math.max(40, Number(raw ?? 66))))
+    const q = new URLSearchParams({ type: '2', id, auto, height })
+    return figure(
+      'music',
+      iframe(`https://music.163.com/outchain/player?${q}`, '网易云音乐播放器'),
+      `height:${height}px`,
+    )
   },
 }
 
