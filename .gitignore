@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# docs/ 是构建产物，但必须提交 —— GitHub Pages 直接服务它。

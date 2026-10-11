@@ -1,0 +1,25 @@
+{
+  "name": "jot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "单文件博客 — 像 TiddlyWiki，但为博客而生。",
+  "type": "module",
+  "packageManager": "pnpm@12.9.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "pull": "node scripts/pull.mjs"
+  },
+  "dependencies": {
+    "marked": "^18.1.0",
+    "microlighter": "^2.2.0"
+  },
+  "devDependencies": {
+    "vite": "^8.3.4",
+    "vite-plugin-singlefile": "^2.3.3"
+  }
+}

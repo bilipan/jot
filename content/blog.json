@@ -1,0 +1,38 @@
+{
+  "title": "jot",
+  "description": "随手记，随手发。",
+  "posts": [
+    {
+      "id": "welcome001",
+      "type": "note",
+      "title": "你好",
+      "content": "这是一个**单文件博客**。\n\n没有数据库，没有 Docker，没有服务器。只有一个 HTML 文件。\n\n## 功能\n\n- 笔记、链接、引用三种格式\n- Markdown 写作\n- 一键发布到 GitHub Pages\n- 暗色模式\n- 归档与标签\n\n## 开始\n\n1. 点击「设置」配置 GitHub\n2. 点击「写作」开始第一篇\n3. 点击「发布」推送到线上\n\n---\n\n*像 TiddlyWiki，但为博客而生。*",
+      "url": "",
+      "source": "",
+      "tags": [
+        "说明"
+      ],
+      "date": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "mv2nu49d97dkq",
+      "type": "note",
+      "title": "aaaa",
+      "content": "dfadsfdasf",
+      "url": "",
+      "source": "",
+      "tags": [],
+      "date": "2026-10-10T17:20:31.249Z"
+    },
+    {
+      "id": "mv2nvzchprw1h",
+      "type": "note",
+      "title": "bbb",
+      "content": "bbbbbbb",
+      "url": "",
+      "source": "",
+      "tags": [],
+      "date": "2026-10-10T17:21:58.193Z"
+    }
+  ]
+}
