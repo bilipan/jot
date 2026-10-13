@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-syntax-theme="github" data-postboy-token="rkuhvfa4e2kmv41b9xu" data-immersive-translate-page-theme="light"><head>
+<html lang="zh-CN" data-syntax-theme="github" data-postboy-token="14cj5qmhvenamv63h1aa" data-immersive-translate-page-theme="light"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>jot</title>
@@ -170,9 +170,21 @@ Please report this to https://github.com/markedjs/marked.`,e){let e=`<p>An error
         "project"
       ],
       "date": "2026-10-11T15:11:34.962Z"
+    },
+    {
+      "id": "mv63ij7kwrn6t",
+      "type": "note",
+      "title": "MacBook 合盖不休眠",
+      "content": "### 方案一：`pmset disablesleep`（当前在用）\n\n```bash\n# 开启合盖不休眠\nsudo /usr/bin/pmset -a disablesleep 1\n\n# 恢复正常休眠\nsudo /usr/bin/pmset -a disablesleep 0\n\n# 查看状态\n/usr/bin/pmset -g | grep SleepDisabled\n```\n\n- ✅ 最彻底，直接禁用所有休眠\n- ⚠️ 注意散热，别扔包里跑高负载\n- ⚠️ 本机 `pmset` 不在默认 PATH，需完整路径 `/usr/bin/pmset`\n\n---\n\n### 方案二：`caffeinate`（临时防睡）\n\n```bash\n# 持续阻止休眠，Ctrl+C 停止\ncaffeinate -s\n\n# 指定时长（如 8 小时）\ncaffeinate -s -t 28800\n```\n\n- ✅ 不需要 sudo\n- ❌ **合盖可能仍然休眠**，`-s` 只防空闲休眠，clamshell 不一定挡得住\n- 适合临时防睡，不适合合盖场景\n\n---\n\n### 方案三：Clamshell Mode（官方合盖模式）\n\n需要**同时满足三个条件**：\n1. 接外接显示器\n2. 接电源适配器\n3. 接外接键鼠（蓝牙或 USB）\n\n- ✅ macOS 原生支持，无需命令\n- ❌ 必须有外接显示器，不适合纯后台场景\n\n---\n\n### 方案四：第三方 App\n\n| App | 说明 |\n|-----|------|\n| **Amphetamine** | 免费，App Store 可下，支持合盖触发器 |\n| **KeepingYouAwake** | 开源免费，菜单栏工具 |\n| **SleepControl** | 轻量级 |\n\n- ✅ 图形化操作，方便切换\n- ⚠️ Amphetamine 合盖不休眠需要额外装驱动组件\n\n---\n\n### 总结\n\n| 方案 | 合盖有效 | 需要 sudo | 需要外接设备 | 推荐度 |\n|------|---------|----------|------------|--------|\n| pmset disablesleep | ✅ | ✅ | ❌ | ⭐⭐⭐⭐⭐ |\n| caffeinate -s | ❓不一定 | ❌ | ❌ | ⭐⭐ |\n| Clamshell Mode | ✅ | ❌ | ✅ 显示器+电源+键鼠 | ⭐⭐⭐ |\n| 第三方 App | ✅ | ❌ | ❌ | ⭐⭐⭐⭐ |",
+      "url": "",
+      "source": "",
+      "tags": [
+        "mac"
+      ],
+      "date": "2026-10-13T03:02:43.136Z"
     }
   ],
-  "_updated": "2026-10-11T16:25:24.815Z"
+  "_updated": "2026-10-13T03:02:43.136Z"
 }</script>
 
 
